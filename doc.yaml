@@ -1,0 +1,96 @@
+
+composer create-project laravel/laravel:^8.0 backend-api-dental 
+
+para instalar $ php artisan install:api
+
+composer require laravel/sanctum
+publicar 
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+
+
+
+instalar mysql
+instalar mysql workbench
+crear bd 
+
+
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+Olvídate completamente de php artisan install:api. No lo necesitas y nunca va a funcionar en tu versión.
+Con los 3 comandos que te di arriba, ya tendrás Sanctum instalado y tu API lista para funcionar.
+
+
+
+
+resumen dia de 8-12-2025
+Perfecto, dejamos aquí por hoy.
+Resumen de lo que logramos hoy:
+✅ Instalaste PHP y MySQL independiente
+✅ Configuraste MySQL Workbench
+✅ Creaste el proyecto Laravel backend (backend-api-dental)
+✅ Creaste el proyecto Vue frontend (frontend-dental)
+✅ Instalaste y configuraste Sanctum para la API
+✅ Conectaste exitosamente Vue con Laravel usando Axios
+✅ Probaste que la comunicación frontend-backend funciona correctamente
+Para mañana continuaremos con:
+
+Crear modelos y migraciones (Pacientes, Citas, Tratamientos)
+Crear controladores de la API
+Configurar rutas del backend
+Crear componentes Vue para la interfaz
+
+¡Buen trabajo hoy! Nos vemos mañana para continuar. 👍
+
+
+Prueba de Conexión
+✓ API funcionando correctamente¡Excelente! La conexión entre Vue (frontend) y Laravel (backend) está funcionando perfectamente. 🎉
+Ahora sí podemos continuar con la estructura completa del proyecto dental.
+Vamos a crear la base de datos y la API:
+1. Crea los modelos y migraciones en Laravel:
+bashcd C:\laravel-proyectos\backend-api-dental
+php artisan make:model Paciente -mcr
+php artisan make:model Cita -mcr
+php artisan make:model Tratamiento -mcr
+(El flag -mcr crea: migration, controller, resource)
+2. Edita las migraciones:
+Abre database/migrations/xxxx_create_pacientes_table.php y reemplaza el método up():
+phppublic function up()
+{
+    Schema::create('pacientes', function (Blueprint $table) {
+        $table->id();
+        $table->string('rut')->unique();
+        $table->string('nombre');
+        $table->string('apellido');
+        $table->string('email')->nullable();
+        $table->string('telefono');
+        $table->date('fecha_nacimiento');
+        $table->text('direccion')->nullable();
+        $table->text('observaciones')->nullable();
+        $table->timestamps();
+    });
+}
+¿Ejecutaste los comandos make:model? Te ayudo con las otras migraciones.
+
+
+
+
+
+
+
+PacientesView.vue (CONTENEDOR PRINCIPAL)
+│
+├── SearchBar.vue (componente de búsqueda)
+│   └── input + botón
+│
+├── PacienteList.vue (lista de pacientes)
+│   └── div con tarjetas de pacientes (HTML directo)
+│       ├── paciente 1
+│       ├── paciente 2
+│       └── paciente n...
+│
+└── PacienteForm.vue (modal formulario - solo si showModal = true)
+    └── formulario con inputs
+
+
+    
