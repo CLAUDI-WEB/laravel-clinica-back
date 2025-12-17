@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PacienteController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\CitaController;
+use App\Http\Controllers\Auth\PatientAuthController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Route::post('/register', [AuthController::class, 'register']);
-// Route::post('/login', [AuthController::class, 'login']);
+ Route::post('auth/login', [PatientAuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -54,3 +55,20 @@ Route::get('citas/semanas', [CitaController::class, 'index']);
 Route::get('citas/horarios-disponibles', [CitaController::class, 'horariosDisponibles']);
 Route::post('citas/agendar', [CitaController::class, 'agendarCita']);
 Route::post('citas/cancelar/{horarioId}', [CitaController::class, 'cancelarCita']);
+
+
+// Route::middleware('auth:sanctum')->group(function () {
+    Route::get('citas/tomadas', [CitaController::class, 'citasTomadas']);
+// });
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [PacienteAuthController::class, 'logout']);
+        Route::get('/user', [PacienteAuthController::class, 'user']);
+        Route::put('/profile', [PacienteAuthController::class, 'updateProfile']);
+        Route::put('/password', [PacienteAuthController::class, 'changePassword']);
+    });
+    
+    // Tus otras rutas protegidas (citas, doctores, etc.)
+});

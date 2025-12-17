@@ -2,21 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class Horario extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     */
     protected $table = 'horarios';
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'fecha',
         'hora',
@@ -29,43 +24,38 @@ class Horario extends Model
         'observaciones'
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected $casts = [
         'fecha' => 'date',
-        'hora' => 'datetime:H:i',
         'disponible' => 'boolean',
-        'duracion' => 'integer'
+        'duracion' => 'integer',
     ];
 
-    /**
-     * Relación con Doctor (si tienes tabla de doctores)
-     * Si no la tienes, comenta o elimina este método
-     */
-    // public function doctor()
-    // {
-    //     return $this->belongsTo(Doctor::class);
-    // }
+    // ══════════════════════════════════════════════════════════════
+    // RELACIONES
+    // ══════════════════════════════════════════════════════════════
 
     /**
-     * Relación con Paciente (si tienes tabla de pacientes)
+     * Un horario pertenece a un doctor
      */
-    // public function paciente()
-    // {
-    //     return $this->belongsTo(Paciente::class);
-    // }
-
-    /**
-     * Scope para obtener solo horarios disponibles
-     */
-    public function scopeDisponibles($query)
+    public function doctor()
     {
-        return $query->where('disponible', true);
+        return $this->belongsTo(Doctor::class, 'doctor_id');
     }
 
     /**
-     * Scope para filtrar por fecha
+     * Un horario puede tener un paciente asignado
+     */
+    public function paciente()
+    {
+        return $this->belongsTo(Paciente::class, 'paciente_id');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // SCOPES - Filtros reutilizables
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * Scope: Filtrar por fecha específica
      */
     public function scopePorFecha($query, $fecha)
     {
@@ -73,37 +63,104 @@ class Horario extends Model
     }
 
     /**
-     * Scope para filtrar por rango de fechas
+     * Scope: Solo horarios disponibles en el codigo lo deje como 0 o 1 booleano
+     */
+    public function scopeDisponibles($query)
+    {
+        return $query->where('disponible', true);
+    }
+
+    /**
+     * Scope: Solo horarios ocupados
+     */
+    public function scopeOcupados($query)
+    {
+        return $query->where('disponible', false);
+    }
+
+    /**
+     * Scope: Filtrar por doctor
+     */
+    public function scopePorDoctor($query, $doctorId)
+    {
+        return $query->where('doctor_id', $doctorId);
+    }
+
+    /**
+     * Scope: Filtrar por rango de fechas
      */
     public function scopeEntreFechas($query, $fechaInicio, $fechaFin)
     {
         return $query->whereBetween('fecha', [$fechaInicio, $fechaFin]);
     }
 
+    // ══════════════════════════════════════════════════════════════
+    // MÉTODOS DE NEGOCIO
+    // ══════════════════════════════════════════════════════════════
+
     /**
-     * Marcar horario como reservado
+     * Reservar el horario para un paciente
      */
     public function reservar($pacienteId = null)
     {
+              \Log::info('✅ Total de citas pacienteId: ' . $pacienteId);
         $this->update([
             'disponible' => false,
             'paciente_id' => $pacienteId
         ]);
+
+        return $this;
     }
 
     /**
-     * Liberar horario
+     * Liberar el horario
      */
     public function liberar()
     {
         $this->update([
             'disponible' => true,
-            'paciente_id' => null
+            'paciente_id' => null,
+            'observaciones' => null
         ]);
+
+        return $this;
     }
 
-        public function doctor()
+    /**
+     * Verificar si el horario está disponible
+     */
+    public function estaDisponible()
     {
-        return $this->belongsTo(Doctor::class);
+        return $this->disponible === true;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // ACCESSORS - Atributos calculados
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * Obtener hora de inicio formateada
+     */
+    public function getHoraInicioFormateadaAttribute()
+    {
+        return Carbon::parse($this->hora)->format('H:i');
+    }
+
+    /**
+     * Calcular hora de fin basada en duración
+     */
+    public function getHoraFinAttribute()
+    {
+        return Carbon::parse($this->hora)
+            ->addMinutes($this->duracion)
+            ->format('H:i');
+    }
+
+    /**
+     * Obtener rango completo de hora
+     */
+    public function getRangoHoraAttribute()
+    {
+        return "{$this->hora_inicio_formateada} - {$this->hora_fin}";
     }
 }
