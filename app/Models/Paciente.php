@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Paciente extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $table = 'pacientes';
 
@@ -22,6 +23,7 @@ class Paciente extends Authenticatable
         'fecha_nacimiento',
         'direccion',
         'observaciones',
+        'rol', // Agregar rol
     ];
 
     protected $hidden = [
@@ -34,6 +36,29 @@ class Paciente extends Authenticatable
             'password' => 'hashed',
             'fecha_nacimiento' => 'date',
         ];
+    }
+
+    // Constantes para los roles
+    const ROL_ADMIN = 'admin';
+    const ROL_PACIENTE = 'paciente';
+
+    // Métodos helper para verificar roles
+    public function isAdmin(): bool
+    {
+        return $this->rol === self::ROL_ADMIN;
+    }
+
+    public function isPaciente(): bool
+    {
+        return $this->rol === self::ROL_PACIENTE;
+    }
+
+    public function hasRole(string|array $roles): bool
+    {
+        if (is_array($roles)) {
+            return in_array($this->rol, $roles);
+        }
+        return $this->rol === $roles;
     }
 
     public function citas()

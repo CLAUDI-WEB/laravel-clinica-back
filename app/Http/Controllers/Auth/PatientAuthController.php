@@ -27,7 +27,17 @@ class PatientAuthController extends Controller
             $paciente = Auth::guard('paciente')->user();
             
             return response()->json([
-                'user' => $paciente,
+                'user' => [
+                    'id' => $paciente->id,
+                    'rut' => $paciente->rut,
+                    'nombre' => $paciente->nombre,
+                    'apellido' => $paciente->apellido,
+                    'email' => $paciente->email,
+                    'telefono' => $paciente->telefono,
+                    'fecha_nacimiento' => $paciente->fecha_nacimiento,
+                    'direccion' => $paciente->direccion,
+                    'rol' => $paciente->rol, // Incluir rol
+                ],
                 'message' => 'Login exitoso'
             ], 200);
         }
@@ -64,13 +74,24 @@ class PatientAuthController extends Controller
             'direccion' => $validated['direccion'] ?? null,
             'fecha_nacimiento' => $validated['fecha_nacimiento'],
             'observaciones' => $validated['observaciones'] ?? null,
+            'rol' => 'paciente', // Siempre se registran como paciente
         ]);
 
         // Autenticar automáticamente después del registro
         Auth::guard('paciente')->login($paciente);
 
         return response()->json([
-            'user' => $paciente,
+            'user' => [
+                'id' => $paciente->id,
+                'rut' => $paciente->rut,
+                'nombre' => $paciente->nombre,
+                'apellido' => $paciente->apellido,
+                'email' => $paciente->email,
+                'telefono' => $paciente->telefono,
+                'fecha_nacimiento' => $paciente->fecha_nacimiento,
+                'direccion' => $paciente->direccion,
+                'rol' => $paciente->rol, // Incluir rol
+            ],
             'message' => 'Paciente registrado exitosamente'
         ], 201);
     }
@@ -104,7 +125,18 @@ class PatientAuthController extends Controller
         }
 
         return response()->json([
-            'user' => $paciente
+            'user' => [
+                'id' => $paciente->id,
+                'rut' => $paciente->rut,
+                'nombre' => $paciente->nombre,
+                'apellido' => $paciente->apellido,
+                'email' => $paciente->email,
+                'telefono' => $paciente->telefono,
+                'fecha_nacimiento' => $paciente->fecha_nacimiento,
+                'direccion' => $paciente->direccion,
+                'observaciones' => $paciente->observaciones,
+                'rol' => $paciente->rol, // Incluir rol
+            ]
         ]);
     }
 
@@ -127,7 +159,18 @@ class PatientAuthController extends Controller
         $paciente->update($validated);
 
         return response()->json([
-            'user' => $paciente,
+            'user' => [
+                'id' => $paciente->id,
+                'rut' => $paciente->rut,
+                'nombre' => $paciente->nombre,
+                'apellido' => $paciente->apellido,
+                'email' => $paciente->email,
+                'telefono' => $paciente->telefono,
+                'fecha_nacimiento' => $paciente->fecha_nacimiento,
+                'direccion' => $paciente->direccion,
+                'observaciones' => $paciente->observaciones,
+                'rol' => $paciente->rol, // Incluir rol
+            ],
             'message' => 'Perfil actualizado exitosamente'
         ], 200);
     }

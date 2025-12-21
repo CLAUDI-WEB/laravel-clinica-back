@@ -19,6 +19,11 @@ return [
             'provider' => 'pacientes',
         ],
     ],
+        'api' => [
+        'driver' => 'token',
+        'provider' => 'users',
+        'hash' => false,
+    ],
 
     'providers' => [
         'users' => [

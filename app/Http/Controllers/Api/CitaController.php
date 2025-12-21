@@ -213,8 +213,6 @@ class CitaController extends Controller
         ], 409);
     }
 
-    \Log::info('✅ Agendando cita para paciente_id: ' . $paciente->id);
-
     // Reservar el horario con el paciente autenticado
     $horario->reservar($paciente->id);
 
@@ -267,6 +265,7 @@ class CitaController extends Controller
                         // Información del paciente
                         'paciente_id' => $horario->paciente_id,
                         'paciente_nombre' => $horario->paciente->nombre ?? 'Sin nombre',
+                        'paciente_apellido' => $horario->paciente->apellido ?? 'Sin nombre',
                         'paciente_rut' => $horario->paciente->rut ?? null,
                         
                         // Información del doctor
